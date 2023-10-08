@@ -48,6 +48,7 @@ Selector labels
 {{- define "stable-diffusion.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "stable-diffusion.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+app: {{ include "stable-diffusion.name" . }}
 {{- end }}
 
 {{/*
