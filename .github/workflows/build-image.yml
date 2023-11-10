@@ -57,6 +57,6 @@ jobs:
         with:
           username: ${{ secrets.HELM_USERNAME }}
           password: ${{ secrets.HELM_PASSWORD }}
-          registry-url: 'https://release.daocloud.io/chartrepo/baize'
+          registry-url: 'https://release.daocloud.io/chartrepo/community'
           force: true
           chart-folder: stable-diffusion
