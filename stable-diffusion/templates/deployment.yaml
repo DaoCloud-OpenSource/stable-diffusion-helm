@@ -38,7 +38,7 @@ spec:
           - --listen
           - --port={{ .Values.service.port }}
           {{- if eq "cpu" .Values.deviceMode }}
-          - --use-apu=all
+          - --use-cpu=all
           - --no-half
           {{- end }}
           {{- end }}
