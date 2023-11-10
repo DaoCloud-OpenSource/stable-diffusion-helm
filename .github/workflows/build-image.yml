@@ -53,7 +53,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Push Helm Chart to ChartMuseum
-        uses: bsord/helm-push@4.2.0
+        uses: bsord/helm-push@v4.2.0
         with:
           username: ${{ secrets.HELM_USERNAME }}
           password: ${{ secrets.HELM_PASSWORD }}
