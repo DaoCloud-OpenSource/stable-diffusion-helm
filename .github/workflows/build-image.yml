@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - 'main'
+  schedule:
+    - cron: '0 0 * * *'
 
 jobs:
-  docker-build:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -22,6 +24,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get latest tag from AUTOMATIC1111/stable-diffusion-webui
+        id: get_latest_tag
+        run: |
+          LATEST_TAG=$(curl -s https://api.github.com/repos/AUTOMATIC1111/stable-diffusion-webui/tags | jq -r '.[0].name')
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v4
@@ -30,7 +38,7 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/stable-diffusion-webui
           tags: |
             latest
-            ${{ github.run_number }}
+            ${{ env.LATEST_TAG }}
 
       - name: Build
         uses: docker/build-push-action@v4
@@ -39,19 +47,22 @@ jobs:
           platforms: linux/amd64
           push: true
           provenance: false
+          build-args:
+          - SD_WEBUI_VERSION=${{ env.LATEST_TAG }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       - name: package helm
         run: |-
-          tar -zcvf stable-diffusion-${{ github.run_number }}.tgz stable-diffusion
+          tar -zcvf stable-diffusion-${{ env.LATEST_TAG }}.tgz stable-diffusion
       - uses: actions/upload-artifact@v3
         with:
-          path: stable-diffusion-${{ github.run_number }}.tgz
-  helm-push:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+          path: stable-diffusion-${{ env.LATEST_TAG }}.tgz
+
+      - name: Fix chart version
+        id: fix-chart-version
+        run: |
+          yq -i '.version="${{ env.LATEST_TAG }}"' stable-diffusion/Chart.yaml
+          yq -i '.image.tag="${{ env.LATEST_TAG }}"' stable-diffusion/values.yaml
       - name: Push Helm Chart to ChartMuseum
         uses: bsord/helm-push@v4.2.0
         with:
@@ -60,3 +71,4 @@ jobs:
           registry-url: 'https://release.daocloud.io/chartrepo/community'
           force: true
           chart-folder: stable-diffusion
+          force: true
