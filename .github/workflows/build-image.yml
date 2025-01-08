@@ -47,8 +47,7 @@ jobs:
           platforms: linux/amd64
           push: true
           provenance: false
-          build-args:
-            - SD_WEBUI_VERSION: ${{ env.LATEST_TAG }}
+          build-args: SD_WEBUI_VERSION=${{ env.LATEST_TAG }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       - name: package helm
