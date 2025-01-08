@@ -17,24 +17,26 @@ ENV venv_dir -
 
 RUN useradd -U --home /stable-diffusion-webui sd
 
-RUN pip install -r requirements.txt --no-cache-dir && \
-    chown -R sd:sd /stable-diffusion-webui
-
-# RUN sh -c 'nohup ./webui.sh -f --skip-torch-cuda-test --no-half >/tmp/sd.log &'; \
-#     start=$(date +%s); \
-#     while true; do \
-#         sleep 3; \
-#         if grep -q "Applying attention optimization" /tmp/sd.log; then \
-#             break; \
-#         elif ! ps -ef | grep -q ./webui.sh; then \
-#             cat /tmp/sd.log; \
-#             exit 11; \
-#         else \
-#             echo "[$(($(date +%s)-${start}))s] preparing..."; \
-#         fi; \
-#     done && \
-#     rm -rf /root/.cache /tmp/sd.log && \
+# RUN pip install -r requirements.txt --no-cache-dir && \
 #     chown -R sd:sd /stable-diffusion-webui
+
+RUN awk '/KEEP_GOING=1/ {flag=1} flag' webui.sh > /tmp/build.sh && \
+    sh -c "nohup bash webui.sh -f --skip-torch-cuda-test --no-half >/tmp/sd.log &"; \
+    start=$(date +%s); \
+    while true; do \
+        sleep 3; \
+        if grep -q "python venv already activate" /tmp/sd.log; then \
+            break; \
+        elif ! ps -ef | grep -q ./webui.sh; then \
+            cat /tmp/sd.log; \
+            exit 11; \
+        else \
+            echo "[$(($(date +%s)-${start}))s] preparing..."; \
+        fi; \
+    done && \
+    rm -rf /root/.cache /tmp/sd.log && \
+    chown -R sd:sd /stable-diffusion-webui && \
+    cat /tmp/build.sh >> webui.sh
 
 EXPOSE 7860
 
