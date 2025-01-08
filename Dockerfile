@@ -17,6 +17,8 @@ ENV venv_dir -
 
 RUN useradd -U --home /stable-diffusion-webui sd
 
+RUN pip install -r requirements.txt --no-cache-dir
+
 # RUN sh -c 'nohup ./webui.sh -f --skip-torch-cuda-test --no-half >/tmp/sd.log &'; \
 #     start=$(date +%s); \
 #     while true; do \
