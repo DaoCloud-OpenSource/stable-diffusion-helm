@@ -71,4 +71,3 @@ jobs:
           registry-url: 'https://release.daocloud.io/chartrepo/community'
           force: true
           chart-folder: stable-diffusion
-          force: true
