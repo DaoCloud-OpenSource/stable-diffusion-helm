@@ -8,7 +8,7 @@ RUN git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui -b ${SD_WE
 WORKDIR /stable-diffusion-webui
 
 RUN apt update && \
-    apt-get install ffmpeg libsm6 libxext6  -y --no-install-recommends google-perftools && \
+    apt-get install bc ffmpeg libsm6 libxext6  -y --no-install-recommends google-perftools && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     echo LD_PRELOAD=$(find /usr/lib -name libtcmalloc.so.4) >> /etc/environment
