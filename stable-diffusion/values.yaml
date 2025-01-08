@@ -11,7 +11,7 @@ customArgs: {}
 # - --listen
 
 image:
-  repository: ghcr.io/kebe7jun/stable-diffusion-webui
+  repository: ghcr.io/daocloud-opensource/stable-diffusion-webui
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
