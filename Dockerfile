@@ -17,12 +17,11 @@ ENV venv_dir -
 
 RUN useradd -U --home /stable-diffusion-webui sd
 
-RUN sed 's/start()/#start()/g' launch.py && \
-    sh -c "nohup bash webui.sh -f --skip-torch-cuda-test --no-half >/tmp/sd.log &"; \
+RUN sh -c "nohup bash webui.sh -f --exit --skip-torch-cuda-test --no-half >/tmp/sd.log &"; \
     start=$(date +%s); \
     while true; do \
         sleep 3; \
-        if grep -q "Kebe xx" /tmp/sd.log; then \
+        if grep -q "Exiting because of --exit argument" /tmp/sd.log; then \
             break; \
         elif ! ps -ef | grep -q ./webui.sh; then \
             cat /tmp/sd.log; \
@@ -32,8 +31,7 @@ RUN sed 's/start()/#start()/g' launch.py && \
         fi; \
     done && \
     rm -rf /root/.cache /tmp/sd.log && \
-    chown -R sd:sd /stable-diffusion-webui && \
-    sed 's/#start()/start()/g' launch.py
+    chown -R sd:sd /stable-diffusion-webui
 
 EXPOSE 7860
 
